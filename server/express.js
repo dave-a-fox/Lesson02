@@ -1,5 +1,5 @@
 import express from 'express'
-import bodyParser from 'body-parser'
+//import bodyParser from 'body-parser' depricated
 import cookieParser from 'cookie-parser'
 import compress from 'compression'
 import cors from 'cors'
@@ -7,11 +7,15 @@ import helmet from 'helmet'
 import Template from './../template'
 import userRoutes from './routes/user.routes'
 import authRoutes from './routes/auth.routes'
+import devBundle from './devBundle'
+import path from 'path'
 
 const app = express()
+const CURRENT_WORKING_DIR = process.cwd()
 /*... configure express ...*/
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true}))
+app.use('/dist', express.static(path.join(CURRENT_WORKING_DIR, 'dist')))
+app.use(express.json())
+app.use(express.urlencoded({ extended: true}))
 app.use(cookieParser())
 app.use(compress())
 app.use(helmet())
@@ -29,4 +33,6 @@ app.use((err, req, res, next) =>{
         res.status(400).json({"error" : err.name + ": " + err.message})
     }
 })
+//comment out in production
+devBundle.compile(app)
 export default app
